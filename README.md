@@ -19,4 +19,4 @@ Just drop the following into your `~/.emacs.d`
 
 Enjoy!
 
-(See nrepl-sexp-fu.el for license)
+(See nrepl-eval-sexp-fu.el for license)

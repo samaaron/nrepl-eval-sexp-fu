@@ -2,6 +2,8 @@
 
 ;; Copyright (C) 2009 Takeshi Banse <takebi@laafc.net>
 ;; Author: Takeshi Banse <takebi@laafc.net>
+;; Modified to add nrepl support by Sam Aaron <samaaron@gmail.com>
+
 ;; Keywords: lisp, highlight, convenience
 
 ;; This program is free software; you can redistribute it and/or modify
