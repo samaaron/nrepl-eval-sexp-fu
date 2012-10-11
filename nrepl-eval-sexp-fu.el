@@ -349,14 +349,18 @@ such that ignores any prefix arguments."
                                 (backward-char)
                                 (bounds-of-thing-at-point 'sexp))))
   (define-nrepl-eval-sexp-fu-flash-command nrepl-eval-expression-at-point
-    (nrepl-eval-sexp-fu-flash       (save-excursion
-                                      (save-match-data
-                                        (ignore-errors (nesf-paredit-forward-down))
-                                        (paredit-forward-up)
-                                        (while (ignore-errors (paredit-forward-up) t))
-                                        (let ((end (point)))
-                                          (backward-sexp)
-                                          (cons (point) end))))))
+    (nrepl-eval-sexp-fu-flash      (when (not (and (live-paredit-top-level-p)
+                                                   (save-excursion
+                                                     (ignore-errors (forward-char))
+                                                     (live-paredit-top-level-p))))
+                                     (save-excursion
+                                       (save-match-data
+                                         (ignore-errors (live-paredit-forward-down))
+                                         (paredit-forward-up)
+                                         (while (ignore-errors (paredit-forward-up) t))
+                                         (let ((end (point)))
+                                           (backward-sexp)
+                                           (cons (point) end)))))))
 
   (progn
     ;; Defines:
