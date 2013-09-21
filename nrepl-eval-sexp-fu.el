@@ -337,7 +337,7 @@ such that ignores any prefix arguments."
        t))))
 
 ;; bug#13952
-(if (version< "24.3.50" emacs-version)
+(if (version<= "24.3.1" emacs-version)
     (defmacro with-nesf-end-of-sexp (&rest body)
       (declare (indent 0))
       `(progn ,@body))
@@ -346,7 +346,6 @@ such that ignores any prefix arguments."
     `(save-excursion
        (backward-char)
        ,@body)))
-
 
 ;;; initialize.
 (defun nesf-initialize ()
@@ -364,6 +363,7 @@ such that ignores any prefix arguments."
        (define-nrepl-eval-sexp-fu-flash-command eek-eval-last-sexp
          (nrepl-eval-sexp-fu-flash (cons (save-excursion (eek-backward-sexp))
                                          (point)))))))
+
 (defun nesf-initialize-nrepl ()
   (define-nrepl-eval-sexp-fu-flash-command nrepl-eval-last-expression
     (nrepl-eval-sexp-fu-flash (with-nesf-end-of-sexp
