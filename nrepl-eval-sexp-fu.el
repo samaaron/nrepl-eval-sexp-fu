@@ -123,6 +123,16 @@
   :type 'function
   :group 'nrepl-eval-sexp-fu)
 
+
+(defun nesf-live-lisp-top-level-p ()
+  "Returns true if point is not within a given form i.e. it's in
+  toplevel 'whitespace'. Only works for lisp modes."
+  (= 0 (car (syntax-ppss))))
+
+(defun nesf-live-whitespace-at-point-p ()
+  "Returns true if the char at point is whitespace"
+  (string-match "[ \n\t]" (buffer-substring (point) (+ 1 (point)))))
+
 (defun nesf-hl-highlight-bounds (bounds face buf)
   (with-current-buffer buf
     (hlt-highlight-region (car bounds) (cdr bounds) face)))
@@ -371,16 +381,16 @@ such that ignores any prefix arguments."
                                     (bounds-of-thing-at-point 'sexp))))))
   (define-nrepl-eval-sexp-fu-flash-command nrepl-eval-expression-at-point
     (nrepl-eval-sexp-fu-flash  (with-nesf-end-of-sexp
-                                 (when (not (and (live-lisp-top-level-p)
+                                 (when (not (and (nesf-live-lisp-top-level-p)
                                                  (save-excursion
                                                    (ignore-errors (forward-char))
-                                                   (live-lisp-top-level-p))
-                                                 (live-whitespace-at-point-p)
+                                                   (nesf-live-lisp-top-level-p))
+                                                 (nesf-live-whitespace-at-point-p)
                                                  (not (save-excursion (sp-up-sexp)))))
                                    (save-excursion
                                      (save-match-data
                                        (while (sp-up-sexp))
-                                       (if (live-whitespace-at-point-p)
+                                       (if (nesf-live-whitespace-at-point-p)
                                            (let ((end (point)))
                                              (backward-sexp)
                                              (cons (point) end))
