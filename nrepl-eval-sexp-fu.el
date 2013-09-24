@@ -82,7 +82,8 @@
 
 (eval-when-compile (require 'cl))
 (require 'highlight)
-(require 'paredit)
+(require 'smartparens)
+(require 'thingatpt)
 
 (defgroup nrepl-eval-sexp-fu nil
   "Tiny functionality enhancements for evaluating sexps."
@@ -317,24 +318,15 @@ such that ignores any prefix arguments."
    buffer"
   (<= (buffer-size) (point)))
 
-(defun nesf-paredit-forward-down ()
+(defun nesf-sp-forward-down ()
   "Doesn't freeze Emacs if attempted to be called at end of
-   buffer. Otherwise similar to paredit-forward-down."
+   buffer. Otherwise similar to sp-down-sexp."
   (interactive)
   (if (save-excursion
           (forward-comment (buffer-size))
           (not (nesf-end-of-buffer-p)))
-      (paredit-forward-down)
+      (sp-down-sexp)
     (error "unexpected end of buffer")))
-
-(defun nesf-paredit-top-level-p ()
-  "Returns true if point is not within a given form i.e. it's in
-  toplevel 'whitespace'"
-  (not
-   (save-excursion
-     (ignore-errors
-       (paredit-forward-up)
-       t))))
 
 ;; bug#13952
 (if (version<= "24.3.1" emacs-version)
@@ -366,25 +358,33 @@ such that ignores any prefix arguments."
 
 (defun nesf-initialize-nrepl ()
   (define-nrepl-eval-sexp-fu-flash-command nrepl-eval-last-expression
-    (nrepl-eval-sexp-fu-flash (with-nesf-end-of-sexp
-                               (bounds-of-thing-at-point 'sexp))))
+    (nrepl-eval-sexp-fu-flash (when (not (bolp ))
+                                (with-nesf-end-of-sexp
+                                  (save-excursion
+                                    (skip-chars-backward " \t")
+                                    (bounds-of-thing-at-point 'sexp))))))
   (define-nrepl-eval-sexp-fu-flash-command nrepl-pprint-eval-last-expression
-    (nrepl-eval-sexp-fu-flash (with-nesf-end-of-sexp
-                               (bounds-of-thing-at-point 'sexp))))
+    (nrepl-eval-sexp-fu-flash (when (not (bolp))
+                                (with-nesf-end-of-sexp
+                                  (save-excursion
+                                    (skip-chars-backward " \t")
+                                    (bounds-of-thing-at-point 'sexp))))))
   (define-nrepl-eval-sexp-fu-flash-command nrepl-eval-expression-at-point
     (nrepl-eval-sexp-fu-flash  (with-nesf-end-of-sexp
-                                (when (not (and (nesf-paredit-top-level-p)
-                                                (save-excursion
-                                                  (ignore-errors (forward-char))
-                                                  (nesf-paredit-top-level-p))))
-                                  (save-excursion
-                                    (save-match-data
-                                      (ignore-errors (nesf-paredit-forward-down))
-                                      (paredit-forward-up)
-                                      (while (ignore-errors (paredit-forward-up) t))
-                                      (let ((end (point)))
-                                        (backward-sexp)
-                                        (cons (point) end))))))))
+                                 (when (not (and (live-lisp-top-level-p)
+                                                 (save-excursion
+                                                   (ignore-errors (forward-char))
+                                                   (live-lisp-top-level-p))
+                                                 (live-whitespace-at-point-p)
+                                                 (not (save-excursion (sp-up-sexp)))))
+                                   (save-excursion
+                                     (save-match-data
+                                       (while (sp-up-sexp))
+                                       (if (live-whitespace-at-point-p)
+                                           (let ((end (point)))
+                                             (backward-sexp)
+                                             (cons (point) end))
+                                         (bounds-of-thing-at-point 'sexp))))))))
 
   (progn
     ;; Defines:
