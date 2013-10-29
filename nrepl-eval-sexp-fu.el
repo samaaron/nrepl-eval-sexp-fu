@@ -132,7 +132,9 @@
 
 (defun nesf-live-whitespace-at-point-p ()
   "Returns true if the char at point is whitespace"
-  (string-match "[ \n\t]" (buffer-substring (point) (+ 1 (point)))))
+  (let ((char (char-after (point))))
+    (or (equal char nil)
+	(equal (char-syntax char) ?-))))
 
 (defun nesf-hl-highlight-bounds (bounds face buf)
   (with-current-buffer buf
