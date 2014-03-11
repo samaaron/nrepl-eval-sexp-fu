@@ -5,7 +5,7 @@
 ;; Modified to add nrepl support by Sam Aaron <samaaron@gmail.com>
 
 ;; Keywords: lisp, highlight, convenience
-;; Package-Requires: ((highlight "0.0.0") (smartparens "0.0.0") (thingatpt "0.0.0")
+;; Package-Requires: ((highlight "0.0.0") (smartparens "0.0.0") (thingatpt "0.0.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
