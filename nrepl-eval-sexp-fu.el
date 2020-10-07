@@ -153,7 +153,7 @@
                            nil flash-error
                            bounds buf face))))
 (defun* nrepl-eval-sexp-fu-flash (bounds &optional (face nrepl-eval-sexp-fu-flash-face) (eface nrepl-eval-sexp-fu-flash-error-face))
-  "BOUNS is either the cell or the function returns, such that (BEGIN . END).
+  "BOUNDS is either the cell or the function returns, such that (BEGIN . END).
 Reurn the 4 values; bounds, highlighting, un-highlighting and error flashing procedure. This function is convenient to use with `define-nrepl-eval-sexp-fu-flash-command'."
   (flet ((bounds () (if (functionp bounds) (funcall bounds) bounds)))
     (let ((b (bounds)) (buf (current-buffer)))
